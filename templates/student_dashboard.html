@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Result – {{ student.name }}{% endblock %}
+
+{% block navbar %}
+<nav class="topnav">
+  <div class="nav-brand">
+    <div class="nav-logo">SKIT</div>
+    <span>Student Portal</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-user">{{ student.name }}</span>
+    <a href="{{ url_for('student_logout') }}" class="btn btn-ghost btn-sm">Logout</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="dash-page">
+  <div class="dash-body">
+
+    <!-- Student Info Card -->
+    <div class="student-info-card fadein">
+      <div class="info-grid">
+        <div class="info-col">
+          <div class="info-row"><span class="info-label">Student Name</span><span class="info-val">{{ student.name }}</span></div>
+          <div class="info-row"><span class="info-label">Mother's Name</span><span class="info-val">{{ student.mother_name or '—' }}</span></div>
+          <div class="info-row"><span class="info-label">Program</span><span class="info-val">{{ student.program or '—' }}</span></div>
+          <div class="info-row"><span class="info-label">Branch</span><span class="info-val">{{ student.branch }}</span></div>
+        </div>
+        <div class="info-col">
+          <div class="info-row"><span class="info-label">College ID</span><span class="info-val mono">{{ student.college_id }}</span></div>
+          <div class="info-row"><span class="info-label">Roll Number</span><span class="info-val mono">{{ student.roll or '—' }}</span></div>
+          <div class="info-row"><span class="info-label">Registration No.</span><span class="info-val mono">{{ student.registration_no or '—' }}</span></div>
+          <div class="info-row"><span class="info-label">Enrollment No.</span><span class="info-val mono">{{ student.enrollment_no or '—' }}</span></div>
+          <div class="info-row"><span class="info-label">ABC ID</span><span class="info-val mono">{{ student.abc_id or '—' }}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Semester tabs -->
+    {% if all_sems %}
+    <div class="sem-tabs">
+      {% for s in all_sems %}
+        <a href="{{ url_for('switch_sem', sem=s) }}"
+           class="sem-tab {% if s == sem %}active{% endif %}">
+          Semester {{ s }}
+        </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if result %}
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Marks</div>
+          <div class="stat-val">{{ result.total_marks }}<span class="stat-denom">/{{ result.max_marks }}</span></div>
+          <div class="stat-sub">Aggregate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Percentage</div>
+          <div class="stat-val">{{ result.percentage }}<span class="stat-denom">%</span></div>
+          <div class="stat-sub">Overall</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">SGPA</div>
+          <div class="stat-val">{{ result.sgpa }}</div>
+          <div class="stat-sub">10-point scale</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Result</div>
+          <div class="stat-val status-{{ result.overall_status | lower }}">{{ result.overall_status }}</div>
+          <div class="stat-sub">{{ result.subjects|length }} subjects · {{ result.year }}</div>
+        </div>
+      </div>
+
+      <!-- Marksheet -->
+      <div class="section-title">
+        Semester {{ sem }} Marksheet
+        <span class="section-sub">{{ result.year }}</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Subject</th>
+              <th>Code</th>
+              <th>Internal ({{ result.subjects[0].int_max if result.subjects else 30 }})</th>
+              <th>External ({{ result.subjects[0].ext_max if result.subjects else 70 }})</th>
+              <th>Total</th>
+              <th>Max</th>
+              <th>%</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in result.subjects %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td><strong>{{ s.name }}</strong></td>
+              <td class="muted">{{ s.code or '—' }}</td>
+              <td>{{ s.internal }}<span class="muted">/{{ s.int_max }}</span></td>
+              <td>{{ s.external }}<span class="muted">/{{ s.ext_max }}</span></td>
+              <td><strong>{{ s.total }}</strong></td>
+              <td class="muted">{{ s.max_total }}</td>
+              <td>{{ '%.1f' % (s.total / s.max_total * 100) if s.max_total else '—' }}%</td>
+              <td><span class="badge badge-{{ s.status | lower }}">{{ s.status }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="5"><strong>Total</strong></td>
+              <td><strong>{{ result.total_marks }}</strong></td>
+              <td>{{ result.max_marks }}</td>
+              <td><strong>{{ result.percentage }}%</strong></td>
+              <td><span class="badge badge-{{ result.overall_status | lower }}">{{ result.overall_status }}</span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="print-bar">
+        <button class="btn btn-ghost" onclick="window.print()">🖨️ Print Marksheet</button>
+        <span class="muted" style="font-size:12px">Published: {{ result.uploaded.strftime('%d %b %Y') }}</span>
+      </div>
+
+    {% else %}
+      <div class="no-result">
+        <div class="no-result-icon">📋</div>
+        <h3>Result not published yet</h3>
+        <p>Semester {{ sem }} result has not been published. Please check back later or contact the examination department.</p>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

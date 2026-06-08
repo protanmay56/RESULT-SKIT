@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}SKIT Examination Portal{% endblock %}
+
+{% block content %}
+<div class="home-page">
+  <div class="home-wrap fadein">
+    <div class="home-header">
+      <div class="college-row">
+        <div class="clg-logo">SKIT</div>
+        <h1 class="clg-name">Swami Keshvanand Institute of Technology, Management &amp; Gramothan (SKIT)</h1>
+      </div>
+      <h2 class="portal-title">Student Examination Portal</h2>
+      <p class="portal-sub">Select your role to access the examination portal</p>
+    </div>
+
+    <div class="cards-grid">
+      <div class="flip-wrap" onclick="window.location='{{ url_for('student_login') }}'">
+        <div class="flip-inner">
+          <div class="flip-f">
+            <div class="ico ico-blue">🎓</div>
+            <div class="card-title">Student</div>
+            <p class="card-desc">Access your admit card, examination form, and results</p>
+            <div class="card-feats">
+              • Fill examination forms<br>
+              • Download admit cards<br>
+              • View subject-wise results
+            </div>
+          </div>
+          <div class="flip-b">
+            <div class="ico ico-blue">🎓</div>
+            <div class="card-title">Student Login</div>
+            <p class="back-sub">Continue to student portal</p>
+            <div class="enter-btn blue">Enter Portal →</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="window.location='{{ url_for('admin_login') }}'">
+        <div class="flip-inner">
+          <div class="flip-f">
+            <div class="ico ico-ind">🏛️</div>
+            <div class="card-title">College</div>
+            <p class="card-desc">Administrative access to manage students and examinations</p>
+            <div class="card-feats">
+              • Manage student records<br>
+              • Upload &amp; publish results<br>
+              • Control admit cards
+            </div>
+          </div>
+          <div class="flip-b">
+            <div class="ico ico-ind">🏛️</div>
+            <div class="card-title">Admin Login</div>
+            <p class="back-sub">Continue to admin portal</p>
+            <div class="enter-btn ind">Enter Portal →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="home-footer">Need help? Contact your institution's examination department</p>
+  </div>
+</div>
+{% endblock %}

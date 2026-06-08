@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Student Login – SKIT Portal{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card fadein">
+    <div class="auth-head">
+      <div class="ico ico-blue" style="margin:0 auto 1rem">🎓</div>
+      <h2>Student Login</h2>
+      <p>Enter your College ID and Date of Birth</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('student_login') }}">
+      <div class="form-group">
+        <label>College ID</label>
+        <input type="text" name="college_id" placeholder="e.g. SKIT2022ECE001" required autocomplete="off">
+        <span class="form-hint">Your college-issued student ID number</span>
+      </div>
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input type="date" name="dob" required>
+        <span class="form-hint">This acts as your password</span>
+      </div>
+      <div class="form-group">
+        <label>View Semester</label>
+        <select name="semester">
+          {% for i in range(1,9) %}
+            <option value="{{ i }}" {% if i==3 %}selected{% endif %}>Semester {{ i }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-top:.5rem">View Result →</button>
+    </form>
+
+    <p class="back-link"><a href="{{ url_for('index') }}">← Back to Home</a></p>
+  </div>
+</div>
+{% endblock %}

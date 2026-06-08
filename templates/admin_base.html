@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+<nav class="topnav">
+  <div class="nav-brand">
+    <div class="nav-logo">SKIT</div>
+    <span>Admin Panel</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-user">{{ session.admin_name }}</span>
+    <a href="{{ url_for('admin_logout') }}" class="btn btn-ghost btn-sm">Logout</a>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="sidebar">
+    <a href="{{ url_for('admin_dashboard') }}"
+       class="sidebar-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+      📊 Dashboard
+    </a>
+    <a href="{{ url_for('admin_upload_result') }}"
+       class="sidebar-link {% if request.endpoint == 'admin_upload_result' %}active{% endif %}">
+      📤 Upload Result
+    </a>
+    <a href="{{ url_for('admin_results') }}"
+       class="sidebar-link {% if request.endpoint == 'admin_results' %}active{% endif %}">
+      📋 All Results
+    </a>
+  </aside>
+  <main class="admin-main">
+    {% block admin_content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

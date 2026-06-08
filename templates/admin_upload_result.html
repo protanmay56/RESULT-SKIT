@@ -1,0 +1,205 @@
+{% extends "admin_base.html" %}
+{% block title %}Upload Result – Admin{% endblock %}
+
+{% block admin_content %}
+<div class="page-header">
+  <h1>📤 Upload Result</h1>
+  <p>Add or update a student's semester result. All fields with * are required.</p>
+</div>
+
+<form method="POST" action="{{ url_for('admin_upload_result') }}" id="upload-form">
+
+  <!-- ── Section 1: Identity Numbers ── -->
+  <div class="upload-card">
+    <h3>🪪 Student Identity Numbers</h3>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label>College ID *</label>
+        <input type="text" name="college_id" id="f-college-id"
+               placeholder="SKIT2022ECE001" required
+               onblur="autofill(this.value)">
+        <span class="form-hint">Used as login username</span>
+      </div>
+      <div class="form-group">
+        <label>Roll Number *</label>
+        <input type="text" name="roll" id="f-roll" placeholder="22ECE001" required>
+      </div>
+      <div class="form-group">
+        <label>Registration Number</label>
+        <input type="text" name="registration_no" id="f-reg" placeholder="RTU/2022/12345">
+      </div>
+      <div class="form-group">
+        <label>Enrollment Number</label>
+        <input type="text" name="enrollment_no" id="f-enroll" placeholder="22BTECH-ECE-001">
+      </div>
+      <div class="form-group">
+        <label>ABC ID</label>
+        <input type="text" name="abc_id" id="f-abc" placeholder="Academic Bank of Credits ID">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 2: Personal Info ── -->
+  <div class="upload-card" style="margin-top:1.2rem">
+    <h3>👤 Personal Information</h3>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label>Student Full Name *</label>
+        <input type="text" name="name" id="f-name" placeholder="Full Name as per records" required>
+      </div>
+      <div class="form-group">
+        <label>Mother's Name</label>
+        <input type="text" name="mother_name" id="f-mother" placeholder="Mother's Full Name">
+      </div>
+      <div class="form-group">
+        <label>Date of Birth *</label>
+        <input type="date" name="dob" id="f-dob" required>
+        <span class="form-hint">Student uses this as login password</span>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" id="f-email" placeholder="student@skit.ac.in">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 3: Academic Info ── -->
+  <div class="upload-card" style="margin-top:1.2rem">
+    <h3>🎓 Academic Information</h3>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label>Program *</label>
+        <select name="program" id="f-program">
+          <option value="B.Tech">B.Tech</option>
+          <option value="M.Tech">M.Tech</option>
+          <option value="MCA">MCA</option>
+          <option value="MBA">MBA</option>
+          <option value="B.Sc">B.Sc</option>
+          <option value="BCA">BCA</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Branch *</label>
+        <select name="branch" id="f-branch">
+          {% for b in ['ECE','CSE','ME','CE','EE','IT','AI&ML','Data Science'] %}
+            <option>{{ b }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Semester *</label>
+        <select name="semester" id="f-sem">
+          {% for i in range(1,9) %}
+            <option value="{{ i }}" {% if i==3 %}selected{% endif %}>Semester {{ i }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Exam Year *</label>
+        <input type="text" name="year" value="2024-25" placeholder="2024-25" required>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:.6rem;padding-top:1.8rem">
+        <input type="checkbox" name="published" id="pub-chk" checked style="width:17px;height:17px;cursor:pointer;accent-color:var(--blue)">
+        <label for="pub-chk" style="cursor:pointer;font-size:14px;font-weight:600;margin:0">Publish immediately</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 4: Subjects ── -->
+  <div class="upload-card" style="margin-top:1.2rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;flex-wrap:wrap;gap:.5rem">
+      <h3>📝 Subject-wise Marks</h3>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="loadTemplate()">Load ECE Sem 3 Template</button>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="addRow()">+ Add Subject</button>
+      </div>
+    </div>
+
+    <div class="subjects-head">
+      <span style="flex:2;min-width:140px">Subject Name</span>
+      <span style="width:100px">Subject Code</span>
+      <span style="width:72px">Int Max</span>
+      <span style="width:72px">Internal</span>
+      <span style="width:72px">Ext Max</span>
+      <span style="width:72px">External</span>
+      <span style="width:36px"></span>
+    </div>
+
+    <div id="subjects-list"></div>
+    <p class="form-hint" style="margin-top:.75rem">
+      Pass criteria: ≥40% in internal · ≥35% in external · ≥33% total
+    </p>
+  </div>
+
+  <div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
+    <button type="submit" class="btn btn-primary">✅ Upload Result</button>
+    <a href="{{ url_for('admin_results') }}" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const defaultSubjects = [
+  {name:'Engineering Mathematics III', code:'3MA3-01', int_max:30, ext_max:70},
+  {name:'Analog Electronics',           code:'3EC3-02', int_max:30, ext_max:70},
+  {name:'Digital Electronics',          code:'3EC3-03', int_max:30, ext_max:70},
+  {name:'Signals & Systems',            code:'3EC3-04', int_max:30, ext_max:70},
+  {name:'Network Analysis',             code:'3EC3-05', int_max:30, ext_max:70},
+  {name:'Electronics Lab',              code:'3EC3-06', int_max:30, ext_max:70},
+];
+
+let rowId = 0;
+
+function addRow(preset = {}) {
+  rowId++;
+  const id = rowId;
+  const div = document.createElement('div');
+  div.className = 'subj-row';
+  div.id = 'row-' + id;
+  div.innerHTML = `
+    <input type="text"   name="subj_name[]"     class="subj-name"   placeholder="Subject Name"   value="${preset.name    || ''}" required>
+    <input type="text"   name="subj_code[]"     class="subj-code"   placeholder="Code"           value="${preset.code    || ''}">
+    <input type="number" name="subj_int_max[]"  class="subj-intmax" placeholder="30"             value="${preset.int_max || 30}"  min="0" max="100">
+    <input type="number" name="subj_internal[]" class="subj-int"    placeholder="Marks"          value="${preset.internal|| ''}"  min="0">
+    <input type="number" name="subj_ext_max[]"  class="subj-extmax" placeholder="70"             value="${preset.ext_max || 70}"  min="0" max="100">
+    <input type="number" name="subj_external[]" class="subj-ext"    placeholder="Marks"          value="${preset.external|| ''}"  min="0">
+    <button type="button" class="del-row-btn" onclick="removeRow(${id})">✕</button>
+  `;
+  document.getElementById('subjects-list').appendChild(div);
+}
+
+function removeRow(id) {
+  const el = document.getElementById('row-' + id);
+  if (el) el.remove();
+}
+
+function loadTemplate() {
+  document.getElementById('subjects-list').innerHTML = '';
+  rowId = 0;
+  defaultSubjects.forEach(s => addRow(s));
+}
+
+function autofill(collegeId) {
+  if (!collegeId) return;
+  fetch('/api/student/' + collegeId.trim().toUpperCase())
+    .then(r => r.json())
+    .then(d => {
+      if (!d.name) return;
+      const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+      set('f-roll',    d.roll);
+      set('f-reg',     d.registration_no);
+      set('f-enroll',  d.enrollment_no);
+      set('f-abc',     d.abc_id);
+      set('f-name',    d.name);
+      set('f-mother',  d.mother_name);
+      set('f-dob',     d.dob);
+      set('f-email',   d.email);
+      set('f-program', d.program);
+      set('f-branch',  d.branch);
+    });
+}
+
+loadTemplate();
+</script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "admin_base.html" %}
+{% block title %}Dashboard – Admin{% endblock %}
+
+{% block admin_content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <p>Examination system overview</p>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Students</div>
+    <div class="stat-val">{{ students_count }}</div>
+    <div class="stat-sub">Registered</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Results Uploaded</div>
+    <div class="stat-val">{{ results_count }}</div>
+    <div class="stat-sub">Across all semesters</div>
+  </div>
+</div>
+
+<div style="display:flex;gap:1rem;margin:1.5rem 0;flex-wrap:wrap">
+  <a href="{{ url_for('admin_upload_result') }}" class="btn btn-primary">📤 Upload New Result</a>
+  <a href="{{ url_for('admin_results') }}" class="btn btn-ghost">📋 View All Results</a>
+</div>
+
+<div class="section-title">Recent Uploads</div>
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>College ID</th><th>Name</th><th>Branch</th>
+        <th>Semester</th><th>SGPA</th><th>Result</th><th>Published</th><th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in recent %}
+      <tr>
+        <td><strong>{{ r.student.college_id }}</strong></td>
+        <td>{{ r.student.name }}</td>
+        <td>{{ r.student.branch }}</td>
+        <td>Sem {{ r.semester }}</td>
+        <td>{{ r.sgpa }}</td>
+        <td><span class="badge badge-{{ r.overall_status | lower }}">{{ r.overall_status }}</span></td>
+        <td>{% if r.published %}<span class="badge badge-pass">Yes</span>{% else %}<span class="badge badge-fail">No</span>{% endif %}</td>
+        <td class="muted">{{ r.uploaded.strftime('%d %b %Y') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="empty-row">No results uploaded yet. Start by uploading a result.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

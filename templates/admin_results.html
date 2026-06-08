@@ -1,0 +1,81 @@
+{% extends "admin_base.html" %}
+{% block title %}All Results – Admin{% endblock %}
+
+{% block admin_content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+  <div>
+    <h1>📋 All Results</h1>
+    <p>{{ results|length }} record(s) found</p>
+  </div>
+  <a href="{{ url_for('admin_upload_result') }}" class="btn btn-primary">📤 Upload New</a>
+</div>
+
+<form method="GET" class="filter-bar">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search College ID / Roll / Name…" class="filter-input">
+  <select name="sem" class="filter-select">
+    <option value="">All Semesters</option>
+    {% for i in range(1,9) %}
+      <option value="{{ i }}" {% if sem|string == i|string %}selected{% endif %}>Sem {{ i }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-ghost btn-sm">Filter</button>
+  <a href="{{ url_for('admin_results') }}" class="btn btn-ghost btn-sm">Clear</a>
+</form>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>College ID</th><th>Roll No</th><th>Name</th><th>Branch</th>
+        <th>Sem</th><th>Year</th><th>SGPA</th><th>%</th>
+        <th>Result</th><th>Published</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in results %}
+      <tr>
+        <td><strong>{{ r.student.college_id }}</strong></td>
+        <td class="muted">{{ r.student.roll }}</td>
+        <td>{{ r.student.name }}</td>
+        <td>{{ r.student.branch }}</td>
+        <td>{{ r.semester }}</td>
+        <td class="muted">{{ r.year }}</td>
+        <td><strong>{{ r.sgpa }}</strong></td>
+        <td>{{ r.percentage }}%</td>
+        <td><span class="badge badge-{{ r.overall_status | lower }}">{{ r.overall_status }}</span></td>
+        <td>
+          <button class="toggle-pub btn-ghost btn-sm"
+                  data-rid="{{ r.id }}"
+                  style="cursor:pointer">
+            {% if r.published %}✅ Yes{% else %}❌ No{% endif %}
+          </button>
+        </td>
+        <td>
+          <div style="display:flex;gap:.4rem">
+            <a href="{{ url_for('admin_upload_result') }}" class="btn btn-ghost btn-sm">Edit</a>
+            <form method="POST" action="{{ url_for('admin_delete_result', rid=r.id) }}"
+                  onsubmit="return confirm('Delete this result permanently?')">
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="11" class="empty-row">No results found</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.toggle-pub').forEach(btn => {
+  btn.addEventListener('click', function() {
+    fetch(`/admin/results/toggle/${this.dataset.rid}`, {method:'POST'})
+      .then(r => r.json())
+      .then(d => { this.textContent = d.published ? '✅ Yes' : '❌ No'; });
+  });
+});
+</script>
+{% endblock %}
