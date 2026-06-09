@@ -9,13 +9,14 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'skit-exam-portal-secret-2024')
 
 # ── Database ──────────────────────────────────────────────────────────────────
-DB_USER = os.environ.get('DB_USER', 'root')
-DB_PASS = os.environ.get('DB_PASS', 'password')
-DB_HOST = os.environ.get('DB_HOST', 'localhost')
-DB_NAME = os.environ.get('DB_NAME', 'skit_portal')
+DB_USER = os.environ.get('MYSQLUSER')
+DB_PASS = os.environ.get('MYSQLPASSWORD')
+DB_HOST = os.environ.get('MYSQLHOST')
+DB_PORT = os.environ.get('MYSQLPORT')
+DB_NAME = os.environ.get('MYSQLDATABASE')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    f'mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}'
+    f'mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
