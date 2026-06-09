@@ -9,10 +9,10 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'skit-exam-portal-secret-2024')
 
 # ── Database ──────────────────────────────────────────────────────────────────
-DB_USER = os.environ.get('MYSQLUSER')
-DB_PASS = os.environ.get('MYSQLPASSWORD')
-DB_HOST = os.environ.get('MYSQLHOST')
-DB_PORT = os.environ.get('MYSQLPORT')
+DB_USER = os.environ.get('MYSQL_USER')
+DB_PASS = os.environ.get('MYSQL_PASSWORD')
+DB_HOST = os.environ.get('MYSQL_HOST')
+DB_PORT = os.environ.get('MYSQL_PORT')
 DB_NAME = os.environ.get('MYSQL_DATABASE')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
