@@ -44,7 +44,7 @@ class Student(db.Model):
     abc_id            = db.Column(db.String(40), default='')
     # personal
     name              = db.Column(db.String(120), nullable=False)
-    father-name       = db.column(db.string(120), default='')
+    father_name       = db.column(db.string(120), default='')
     mother_name       = db.Column(db.String(120), default='')
     # academic
     branch            = db.Column(db.String(30), nullable=False)
@@ -292,6 +292,7 @@ def admin_upload_result():
         enrollment_no   = request.form.get('enrollment_no', '').strip()
         abc_id          = request.form.get('abc_id', '').strip()
         name            = request.form.get('name', '').strip()
+        father_name     = request.form.get('father_name', '').strip)
         mother_name     = request.form.get('mother_name', '').strip()
         dob             = request.form.get('dob', '').strip()
         branch          = request.form.get('branch', '').strip()
@@ -316,6 +317,7 @@ def admin_upload_result():
         student.enrollment_no   = enrollment_no
         student.abc_id          = abc_id
         student.name            = name
+        student.father_name     = father_name
         student.mother_name     = mother_name
         student.dob             = dob
         student.branch          = branch
@@ -339,8 +341,8 @@ def admin_upload_result():
         # Subjects
         names     = request.form.getlist('subj_name[]')
         codes     = request.form.getlist('subj_code[]')
-        internals = request.form.getlist('subj_internal[]')
-        externals = request.form.getlist('subj_external[]')
+        internals_marks = request.form.getlist('subj_internal[]')
+        externals_marks = request.form.getlist('subj_external[]')
         int_maxes = request.form.getlist('subj_int_max[]')
         ext_maxes = request.form.getlist('subj_ext_max[]')
 
@@ -351,8 +353,8 @@ def admin_upload_result():
                 result_id = result.id,
                 name      = n.strip(),
                 code      = codes[i]     if i < len(codes)     else '',
-                internal  = int(internals[i]) if i < len(internals) and internals[i] else 0,
-                external  = int(externals[i]) if i < len(externals) and externals[i] else 0,
+                internal_marks  = int(internals_marks[i]) if i < len(internals) and internals[i] else 0,
+                external_marks  = int(externals_marks[i]) if i < len(externals) and externals[i] else 0,
                 int_max   = int(int_maxes[i]) if i < len(int_maxes) and int_maxes[i] else 30,
                 ext_max   = int(ext_maxes[i]) if i < len(ext_maxes) and ext_maxes[i] else 70,
             ))
@@ -374,6 +376,7 @@ def api_student(college_id):
         return jsonify({
             'roll': s.roll, 'registration_no': s.registration_no,
             'enrollment_no': s.enrollment_no, 'abc_id': s.abc_id,
+            'name': s.name, 'father_name': s.father_name,
             'name': s.name, 'mother_name': s.mother_name,
             'dob': s.dob, 'branch': s.branch,
             'program': s.program, 'email': s.email
