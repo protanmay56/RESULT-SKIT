@@ -40,11 +40,11 @@ class Student(db.Model):
     college_id        = db.Column(db.String(30), unique=True, nullable=False)  # login key 1
     dob               = db.Column(db.String(20), nullable=False)                # login key 2
     roll              = db.Column(db.String(30), nullable=False)
-    registration_no   = db.Column(db.String(40), default='')
     enrollment_no     = db.Column(db.String(40), default='')
     abc_id            = db.Column(db.String(40), default='')
     # personal
     name              = db.Column(db.String(120), nullable=False)
+    father-name       = db.column(db.string(120), default='')
     mother_name       = db.Column(db.String(120), default='')
     # academic
     branch            = db.Column(db.String(30), nullable=False)
@@ -66,11 +66,11 @@ class Result(db.Model):
 
     @property
     def total_marks(self):
-        return sum((s.internal or 0) + (s.external or 0) for s in self.subjects)
+        return sum((s.internal_marks or 0) + (s.external_marks or 0) for s in self.subjects)
 
     @property
     def max_marks(self):
-        return sum((s.int_max or 30) + (s.ext_max or 70) for s in self.subjects)
+        return sum((s.int_max or 40) + (s.ext_max or 60) for s in self.subjects)
 
     @property
     def percentage(self):
@@ -96,14 +96,14 @@ class Subject(db.Model):
     result_id = db.Column(db.Integer, db.ForeignKey('results.id'), nullable=False)
     name      = db.Column(db.String(120), nullable=False)
     code      = db.Column(db.String(30), default='')
-    internal  = db.Column(db.Integer, default=0)
-    external  = db.Column(db.Integer, default=0)
+    internal_marks  = db.Column(db.Integer, default=0)
+    external_marks  = db.Column(db.Integer, default=0)
     int_max   = db.Column(db.Integer, default=30)
     ext_max   = db.Column(db.Integer, default=70)
 
     @property
     def total(self):
-        return (self.internal or 0) + (self.external or 0)
+        return (self.internal_marks or 0) + (self.external_marks or 0)
 
     @property
     def max_total(self):
@@ -111,8 +111,8 @@ class Subject(db.Model):
 
     @property
     def status(self):
-        pass_ext = (self.external or 0) >= round((self.ext_max or 70) * 0.35)
-        pass_int = (self.internal or 0) >= round((self.int_max or 30) * 0.40)
+        pass_ext = (self.external_marks or 0) >= round((self.ext_max or 70) * 0.35)
+        pass_int = (self.internal_marks or 0) >= round((self.int_max or 30) * 0.40)
         pass_tot = self.max_total > 0 and self.total / self.max_total >= 0.33
         if pass_ext and pass_int and pass_tot:
             return 'Pass'
