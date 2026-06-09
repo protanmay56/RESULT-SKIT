@@ -13,7 +13,7 @@ DB_USER = os.environ.get('MYSQLUSER')
 DB_PASS = os.environ.get('MYSQLPASSWORD')
 DB_HOST = os.environ.get('MYSQLHOST')
 DB_PORT = os.environ.get('MYSQLPORT')
-DB_NAME = os.environ.get('MYSQLDATABASE')
+DB_NAME = os.environ.get('MYSQL_DATABASE')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     f'mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
