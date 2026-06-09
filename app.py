@@ -209,7 +209,7 @@ def admin_login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
         admin = Admin.query.filter_by(username=username).first()
-        if admin and check_password_hash(admin.password, password):
+        if admin and admin.password == password:
             session['admin_id']   = admin.id
             session['admin_name'] = admin.name
             return redirect(url_for('admin_dashboard'))
